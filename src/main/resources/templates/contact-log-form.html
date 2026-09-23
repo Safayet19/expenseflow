@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Contact Log Form')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar('contacts')}"></div>
+
+<main class="page-container narrow-page">
+    <div class="page-header">
+        <div>
+            <p class="eyebrow">Communication record</p>
+            <h1 th:text="${contactLogDTO.id == null ? 'Add Contact Log' : 'Edit Contact Log'}">Contact Log Form</h1>
+        </div>
+        <a class="button secondary" th:href="@{/contacts}">Back to List</a>
+    </div>
+
+    <form class="form-card" method="post" th:action="@{/contacts/save}" th:object="${contactLogDTO}" data-date-range data-date-message="Next contact date cannot be before the contact date.">
+        <input type="hidden" th:field="*{id}">
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Friend</label>
+                <select th:field="*{friendId}" required>
+                    <option value="">Select a friend</option>
+                    <option th:each="friend : ${friends}"
+                            th:value="${friend.id}"
+                            th:text="${friend.name + ' - ' + friend.phone}"></option>
+                </select>
+                <span class="error-message" th:errors="*{friendId}"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Related Loan</label>
+                <select th:field="*{loanId}">
+                    <option value="">No related loan</option>
+                    <option th:each="loan : ${loans}"
+                            th:value="${loan.id}"
+                            th:text="${'Loan #' + loan.id + ' - ' + loan.friend.name + ' - ' + (loan.itemName != null && !loan.itemName.isEmpty() ? loan.itemName : loan.loanType)}"></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Contact Date</label>
+                <input type="date" th:field="*{contactDate}" required data-date-start data-no-future>
+                <span class="error-message" th:errors="*{contactDate}"></span>
+            </div>
+            <div class="form-group">
+                <label>Contact Method</label>
+                <select th:field="*{contactMethod}" required>
+                    <option value="">Select method</option>
+                    <option value="Phone Call">Phone Call</option>
+                    <option value="WhatsApp">WhatsApp</option>
+                    <option value="Messenger">Messenger</option>
+                    <option value="SMS">SMS</option>
+                    <option value="In Person">In Person</option>
+                    <option value="Other">Other</option>
+                </select>
+                <span class="error-message" th:errors="*{contactMethod}"></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Discussion</label>
+            <textarea th:field="*{discussion}" rows="4" maxlength="1000" required placeholder="What did you discuss?"></textarea>
+            <span class="error-message" th:errors="*{discussion}"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Friend Response</label>
+            <textarea th:field="*{friendResponse}" rows="3" maxlength="1000" placeholder="What did your friend say?"></textarea>
+            <span class="error-message" th:errors="*{friendResponse}"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Next Contact Date</label>
+            <input type="date" th:field="*{nextContactDate}" data-date-end>
+            <span class="error-message client-error" data-date-error aria-live="polite"></span>
+        </div>
+
+        <div class="form-actions">
+            <button class="button primary" type="submit">Save Contact Log</button>
+            <a class="button secondary" th:href="@{/contacts}">Cancel</a>
+        </div>
+    </form>
+</main>
+<div th:replace="~{fragments/layout :: confirmModal}"></div>
+</body>
+</html>

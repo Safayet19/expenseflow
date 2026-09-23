@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Loan Form')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar('loans')}"></div>
+
+<main class="page-container narrow-page">
+    <div class="page-header">
+        <div>
+            <p class="eyebrow">Loan information</p>
+            <h1 th:text="${loanDTO.id == null ? 'Add Loan' : 'Edit Loan'}">Loan Form</h1>
+        </div>
+        <a class="button secondary" th:href="@{/loans}">Back to List</a>
+    </div>
+
+    <form class="form-card" method="post" th:action="@{/loans/save}" th:object="${loanDTO}" data-date-range data-date-message="Expected return date cannot be before the borrow date.">
+        <input type="hidden" th:field="*{id}">
+
+        <div class="form-group">
+            <label>Select Friend</label>
+            <select th:field="*{friendId}" required>
+                <option value="">Select a friend</option>
+                <option th:each="friend : ${friends}"
+                        th:value="${friend.id}"
+                        th:text="${friend.name + ' - ' + friend.phone}"></option>
+            </select>
+            <span class="error-message" th:errors="*{friendId}"></span>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Loan Type</label>
+                <select th:field="*{loanType}" required>
+                    <option value="">Select loan type</option>
+                    <option value="Money">Money</option>
+                    <option value="Book">Book</option>
+                    <option value="Charger">Charger</option>
+                    <option value="Laptop">Laptop</option>
+                    <option value="Umbrella">Umbrella</option>
+                    <option value="Clothes">Clothes</option>
+                    <option value="Other">Other</option>
+                </select>
+                <span class="error-message" th:errors="*{loanType}"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Tags</label>
+                <select th:field="*{tagIds}" multiple size="5">
+                    <option th:each="tagItem : ${tags}"
+                            th:value="${tagItem.id}"
+                            th:text="${tagItem.name}"></option>
+                </select>
+                <small>Hold Ctrl to select more than one tag.</small>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Item Name</label>
+            <input type="text" th:field="*{itemName}" maxlength="120" placeholder="Enter item name when applicable">
+            <span class="error-message" th:errors="*{itemName}"></span>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Amount</label>
+                <input type="number" step="0.01" min="0" max="999999999.99" th:field="*{amount}" placeholder="Enter amount">
+                <span class="error-message" th:errors="*{amount}"></span>
+            </div>
+            <div class="form-group">
+                <label>Quantity</label>
+                <input type="number" min="0" max="100000" th:field="*{quantity}" placeholder="Enter quantity">
+                <span class="error-message" th:errors="*{quantity}"></span>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Borrow Date</label>
+                <input type="date" th:field="*{borrowDate}" required data-date-start data-no-future>
+                <span class="error-message" th:errors="*{borrowDate}"></span>
+            </div>
+            <div class="form-group">
+                <label>Expected Return Date</label>
+                <input type="date" th:field="*{expectedReturnDate}" required data-date-end>
+                <span class="error-message" th:errors="*{expectedReturnDate}"></span>
+                <span class="error-message client-error" data-date-error aria-live="polite"></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Status</label>
+            <select th:field="*{status}" required>
+                <option value="">Select status</option>
+                <option value="BORROWED">BORROWED</option>
+                <option value="RETURNED">RETURNED</option>
+                <option value="OVERDUE">OVERDUE</option>
+            </select>
+            <span class="error-message" th:errors="*{status}"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Notes</label>
+            <textarea th:field="*{notes}" rows="4" maxlength="1000" placeholder="Write a short note"></textarea>
+            <span class="error-message" th:errors="*{notes}"></span>
+        </div>
+
+        <div class="form-actions">
+            <button class="button primary" type="submit">Save Loan</button>
+            <a class="button secondary" th:href="@{/loans}">Cancel</a>
+        </div>
+    </form>
+</main>
+<div th:replace="~{fragments/layout :: confirmModal}"></div>
+</body>
+</html>

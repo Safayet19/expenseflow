@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Contact Logs')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar('contacts')}"></div>
+
+<main class="page-container">
+    <div class="page-header">
+        <div>
+            <p class="eyebrow">Communication history</p>
+            <h1>Contact Logs</h1>
+        </div>
+        <a class="button primary" th:href="@{/contacts/new}">Add Contact Log</a>
+    </div>
+
+    <div class="table-card">
+        <div class="table-responsive">
+            <table>
+                <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Friend</th>
+                    <th>Loan</th>
+                    <th>Date</th>
+                    <th>Method</th>
+                    <th>Discussion</th>
+                    <th>Response</th>
+                    <th>Next Contact</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="contact, stat : ${contactLogs}">
+                    <td class="row-number" th:text="${stat.count}"></td>
+                    <td class="strong-cell"
+                        th:text="${contact.friend != null ? contact.friend.name : (contact.loan != null && contact.loan.friend != null ? contact.loan.friend.name : '-')}"></td>
+                    <td th:text="${contact.loan != null ? 'Loan #' + contact.loan.id : '-'}"></td>
+                    <td th:text="${contact.contactDate}"></td>
+                    <td th:text="${contact.contactMethod}"></td>
+                    <td th:text="${contact.discussion}"></td>
+                    <td th:text="${contact.friendResponse != null && !contact.friendResponse.isEmpty() ? contact.friendResponse : '-'}"></td>
+                    <td th:text="${contact.nextContactDate != null ? contact.nextContactDate : '-'}"></td>
+                    <td>
+                        <div class="action-links">
+                            <a class="action-link edit" th:href="@{/contacts/edit/{id}(id=${contact.id})}">Edit</a>
+                            <a class="action-link delete" th:href="@{/contacts/delete/{id}(id=${contact.id})}" data-delete-trigger data-delete-entity="contact log">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(contactLogs)}">
+                    <td class="empty-state" colspan="9">No contact logs found.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<div th:replace="~{fragments/layout :: confirmModal}"></div>
+</body>
+</html>

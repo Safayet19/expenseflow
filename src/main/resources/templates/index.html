@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Home')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar('home')}"></div>
+
+<main class="page-container">
+    <section class="hero">
+        <p class="eyebrow">Personal loan organizer</p>
+        <h1>Keep personal loans clear and organized</h1>
+        <p class="hero-text">Manage friends, loans, reminders, and follow-ups from one clean workspace.</p>
+    </section>
+
+    <section class="home-grid">
+        <div class="home-card">
+            <div class="card-icon">F</div>
+            <h2>Friends</h2>
+            <p>Add, view, edit, and delete friend information.</p>
+            <div class="card-actions"><a class="button primary" th:href="@{/friends}">Open Friends</a></div>
+        </div>
+        <div class="home-card">
+            <div class="card-icon">L</div>
+            <h2>Loans</h2>
+            <p>Record money or items and connect each loan to a friend.</p>
+            <div class="card-actions"><a class="button primary" th:href="@{/loans}">Open Loans</a></div>
+        </div>
+        <div class="home-card">
+            <div class="card-icon">R</div>
+            <h2>Reminders</h2>
+            <p>Create reminders and mark them completed.</p>
+            <div class="card-actions"><a class="button primary" th:href="@{/reminders}">Open Reminders</a></div>
+        </div>
+        <div class="home-card">
+            <div class="card-icon">C</div>
+            <h2>Contact Logs</h2>
+            <p>Save calls, messages, discussions, and responses.</p>
+            <div class="card-actions"><a class="button primary" th:href="@{/contacts}">Open Contacts</a></div>
+        </div>
+        <div class="home-card">
+            <div class="card-icon">T</div>
+            <h2>Tags</h2>
+            <p>Create simple labels and assign one to a loan.</p>
+            <div class="card-actions"><a class="button primary" th:href="@{/tags}">Open Tags</a></div>
+        </div>
+        <div class="home-card">
+            <div class="card-icon">A</div>
+            <h2>Activities</h2>
+            <p>See automatic history when loans are created, updated, or deleted.</p>
+            <div class="card-actions"><a class="button primary" th:href="@{/activities}">Open Activities</a></div>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">Developed by Safayet Ullah, Southeast University</footer>
+<div th:replace="~{fragments/layout :: confirmModal}"></div>
+</body>
+</html>

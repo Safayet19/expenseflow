@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Tag Form')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar('tags')}"></div>
+
+<main class="page-container narrow-page">
+    <div class="page-header">
+        <div>
+            <p class="eyebrow">Loan organization</p>
+            <h1 th:text="${tagDTO.id == null ? 'Add Tag' : 'Edit Tag'}">Tag Form</h1>
+        </div>
+        <a class="button secondary" th:href="@{/tags}">Back to List</a>
+    </div>
+
+    <form class="form-card" method="post" th:action="@{/tags/save}" th:object="${tagDTO}">
+        <input type="hidden" th:field="*{id}">
+
+        <div class="form-group">
+            <label>Tag Name</label>
+            <input type="text" th:field="*{name}" minlength="2" maxlength="40" required placeholder="Example: Urgent">
+            <span class="error-message" th:errors="*{name}"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Description</label>
+            <textarea th:field="*{description}" rows="4" maxlength="300" placeholder="Describe when this tag should be used"></textarea>
+            <span class="error-message" th:errors="*{description}"></span>
+        </div>
+
+        <div class="form-actions">
+            <button class="button primary" type="submit">Save Tag</button>
+            <a class="button secondary" th:href="@{/tags}">Cancel</a>
+        </div>
+    </form>
+</main>
+<div th:replace="~{fragments/layout :: confirmModal}"></div>
+</body>
+</html>

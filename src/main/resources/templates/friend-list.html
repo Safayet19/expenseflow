@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Friends')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar('friends')}"></div>
+
+<main class="page-container">
+    <div class="page-header">
+        <div>
+            <p class="eyebrow">Friend management</p>
+            <h1>Friend List</h1>
+        </div>
+        <a class="button primary" th:href="@{/friends/new}">Add New Friend</a>
+    </div>
+
+    <div class="table-card">
+        <div class="table-responsive">
+            <table>
+                <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Address</th>
+                    <th>Loans</th>
+                    <th>Notes</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="friend, stat : ${friends}">
+                    <td class="row-number" th:text="${stat.count}"></td>
+                    <td class="strong-cell" th:text="${friend.name}"></td>
+                    <td th:text="${friend.phone}"></td>
+                    <td th:text="${friend.email}"></td>
+                    <td th:text="${friend.address != null ? friend.address.fullAddress : '-'}"></td>
+                    <td th:text="${#lists.size(friend.loans)}"></td>
+                    <td th:text="${friend.notes}"></td>
+                    <td>
+                        <div class="action-links">
+                            <a class="action-link edit" th:href="@{/friends/edit/{id}(id=${friend.id})}">Edit</a>
+                            <a class="action-link delete" th:href="@{/friends/delete/{id}(id=${friend.id})}" data-delete-trigger data-delete-entity="friend" th:attr="data-delete-name=${friend.name}">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(friends)}">
+                    <td class="empty-state" colspan="8">No friends found. Add your first friend.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<div th:replace="~{fragments/layout :: confirmModal}"></div>
+</body>
+</html>

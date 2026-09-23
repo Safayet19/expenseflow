@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Error')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar('home')}"></div>
+<main class="page-container narrow-page">
+    <section class="form-card">
+        <p class="eyebrow">Request could not be completed</p>
+        <h1 th:text="${errorTitle}">Something went wrong</h1>
+        <p class="muted-text" th:text="${errorMessage}">Please try again.</p>
+        <div class="form-actions">
+            <a class="button primary" th:href="@{/}">Back to Home</a>
+        </div>
+    </section>
+</main>
+<div th:replace="~{fragments/layout :: confirmModal}"></div>
+</body>
+</html>

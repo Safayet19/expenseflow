@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Reminder Form')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar('reminders')}"></div>
+
+<main class="page-container narrow-page">
+    <div class="page-header">
+        <div>
+            <p class="eyebrow">Reminder information</p>
+            <h1 th:text="${reminderDTO.id == null ? 'Add Reminder' : 'Edit Reminder'}">Reminder Form</h1>
+        </div>
+        <a class="button secondary" th:href="@{/reminders}">Back to List</a>
+    </div>
+
+    <form class="form-card" method="post" th:action="@{/reminders/save}" th:object="${reminderDTO}">
+        <input type="hidden" th:field="*{id}">
+
+        <div class="form-group">
+            <label>Friend</label>
+            <select th:field="*{friendId}" required>
+                <option value="">Select a friend</option>
+                <option th:each="friend : ${friends}"
+                        th:value="${friend.id}"
+                        th:text="${friend.name + ' - ' + friend.phone}"></option>
+            </select>
+            <span class="error-message" th:errors="*{friendId}"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Related Loan</label>
+            <select th:field="*{loanId}">
+                <option value="">No related loan</option>
+                <option th:each="loan : ${loans}"
+                        th:value="${loan.id}"
+                        th:text="${'Loan #' + loan.id + ' - ' + loan.friend.name + ' - ' + (loan.itemName != null && !loan.itemName.isEmpty() ? loan.itemName : loan.loanType)}"></option>
+            </select>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Reminder Date</label>
+                <input type="date" th:field="*{reminderDate}" required>
+                <span class="error-message" th:errors="*{reminderDate}"></span>
+            </div>
+            <div class="form-group">
+                <label>Reminder Time</label>
+                <input type="time" th:field="*{reminderTime}" required>
+                <span class="error-message" th:errors="*{reminderTime}"></span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Message</label>
+            <textarea th:field="*{message}" rows="4" maxlength="300" required placeholder="What do you want to remember?"></textarea>
+            <span class="error-message" th:errors="*{message}"></span>
+        </div>
+
+        <div class="checkbox-row">
+            <input id="completed" type="checkbox" th:field="*{completed}">
+            <label for="completed">Completed</label>
+        </div>
+
+        <div class="form-actions">
+            <button class="button primary" type="submit">Save Reminder</button>
+            <a class="button secondary" th:href="@{/reminders}">Cancel</a>
+        </div>
+    </form>
+</main>
+<div th:replace="~{fragments/layout :: confirmModal}"></div>
+</body>
+</html>

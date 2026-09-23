@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Reminders')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar('reminders')}"></div>
+
+<main class="page-container">
+    <div class="page-header">
+        <div>
+            <p class="eyebrow">Follow-up planning</p>
+            <h1>Reminder List</h1>
+        </div>
+        <a class="button primary" th:href="@{/reminders/new}">Add Reminder</a>
+    </div>
+
+    <div class="table-card">
+        <div class="table-responsive">
+            <table>
+                <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Friend</th>
+                    <th>Loan</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Message</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="reminder, stat : ${reminders}">
+                    <td class="row-number" th:text="${stat.count}"></td>
+                    <td class="strong-cell"
+                        th:text="${reminder.friend != null ? reminder.friend.name : (reminder.loan != null && reminder.loan.friend != null ? reminder.loan.friend.name : '-')}"></td>
+                    <td th:text="${reminder.loan != null ? 'Loan #' + reminder.loan.id : '-'}"></td>
+                    <td th:text="${reminder.reminderDate}"></td>
+                    <td th:text="${reminder.reminderTime}"></td>
+                    <td th:text="${reminder.message}"></td>
+                    <td>
+                        <span class="status-badge"
+                              th:classappend="${reminder.completed ? 'completed-badge' : (reminder.reminderDate.isBefore(today) ? 'missed-badge' : '')}"
+                              th:text="${reminder.completed ? 'COMPLETED' : (reminder.reminderDate.isBefore(today) ? 'MISSED' : 'PENDING')}"></span>
+                    </td>
+                    <td>
+                        <div class="action-links">
+                            <a class="action-link view" th:if="${!reminder.completed}"
+                               th:href="@{/reminders/complete/{id}(id=${reminder.id})}">Complete</a>
+                            <a class="action-link edit" th:href="@{/reminders/edit/{id}(id=${reminder.id})}">Edit</a>
+                            <a class="action-link delete" th:href="@{/reminders/delete/{id}(id=${reminder.id})}" data-delete-trigger data-delete-entity="reminder">Delete</a>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(reminders)}">
+                    <td class="empty-state" colspan="8">No reminders found.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<div th:replace="~{fragments/layout :: confirmModal}"></div>
+</body>
+</html>

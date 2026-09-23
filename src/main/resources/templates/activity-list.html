@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Activities')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar('activities')}"></div>
+
+<main class="page-container">
+    <div class="page-header">
+        <div>
+            <p class="eyebrow">Automatic loan records</p>
+            <h1>Loan Activity History</h1>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <div class="table-responsive">
+            <table>
+                <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Loan ID</th>
+                    <th>Friend</th>
+                    <th>Activity</th>
+                    <th>Date and Time</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="activity, stat : ${activities}">
+                    <td class="row-number" th:text="${stat.count}"></td>
+                    <td th:text="${activity.loan != null ? 'Loan #' + activity.loan.id : '-'}"></td>
+                    <td class="strong-cell"
+                        th:text="${activity.loan != null && activity.loan.friend != null ? activity.loan.friend.name : '-'}"></td>
+                    <td th:text="${activity.activityMessage}"></td>
+                    <td th:text="${activity.activityDateTime}"></td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(activities)}">
+                    <td class="empty-state" colspan="5">No loan activities found yet.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<div th:replace="~{fragments/layout :: confirmModal}"></div>
+</body>
+</html>

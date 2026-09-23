@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Loan Details')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: navbar('loans')}"></div>
+
+<main class="page-container narrow-page">
+    <div class="page-header">
+        <div>
+            <p class="eyebrow">Loan information</p>
+            <h1>Loan Details</h1>
+        </div>
+        <a class="button secondary" th:href="@{/loans}">Back to List</a>
+    </div>
+
+    <section class="details-card">
+        <div class="details-top">
+            <div>
+                <span class="details-label">Friend</span>
+                <h2 th:text="${loan.friend != null ? loan.friend.name : 'No friend assigned'}">Friend Name</h2>
+                <p class="muted-text" th:if="${loan.friend != null}" th:text="${loan.friend.phone}"></p>
+            </div>
+            <span class="status-badge"
+                  th:classappend="${loan.overdue ? 'missed-badge' : ''}"
+                  th:text="${loan.overdue ? 'OVERDUE' : loan.status}">BORROWED</span>
+        </div>
+
+        <div class="details-grid">
+            <div class="detail-item">
+                <span class="details-label">Loan Type</span>
+                <strong th:text="${loan.loanType}">Money</strong>
+            </div>
+            <div class="detail-item">
+                <span class="details-label">Tags</span>
+                <div>
+                    <span class="tag-badge" th:each="tag : ${loan.tags}" th:text="${tag.name}"></span>
+                    <span th:if="${#sets.isEmpty(loan.tags)}"
+                          th:text="${loan.legacyTag != null && !loan.legacyTag.isEmpty() ? loan.legacyTag : '-'}"></span>
+                </div>
+            </div>
+            <div class="detail-item">
+                <span class="details-label">Item Name</span>
+                <strong th:text="${loan.itemName != null && !loan.itemName.isEmpty() ? loan.itemName : '-'}">-</strong>
+            </div>
+            <div class="detail-item">
+                <span class="details-label">Amount</span>
+                <strong th:text="${loan.amount != null ? loan.amount : '-'}">-</strong>
+            </div>
+            <div class="detail-item">
+                <span class="details-label">Quantity</span>
+                <strong th:text="${loan.quantity != null ? loan.quantity : '-'}">-</strong>
+            </div>
+            <div class="detail-item">
+                <span class="details-label">Borrow Date</span>
+                <strong th:text="${loan.borrowDate}">2026-07-25</strong>
+            </div>
+            <div class="detail-item">
+                <span class="details-label">Expected Return</span>
+                <strong th:text="${loan.expectedReturnDate}">2026-07-30</strong>
+            </div>
+            <div class="detail-item">
+                <span class="details-label">Reminders</span>
+                <strong th:text="${#lists.size(loan.reminders)}"></strong>
+            </div>
+            <div class="detail-item">
+                <span class="details-label">Contact Logs</span>
+                <strong th:text="${#lists.size(loan.contactLogs)}"></strong>
+            </div>
+        </div>
+
+        <div class="notes-box">
+            <span class="details-label">Notes</span>
+            <p th:text="${loan.notes != null && !loan.notes.isEmpty() ? loan.notes : 'No notes added.'}">No notes added.</p>
+        </div>
+
+        <div class="form-actions">
+            <a class="button primary" th:href="@{/loans/edit/{id}(id=${loan.id})}">Edit Loan</a>
+            <a class="button danger" th:href="@{/loans/delete/{id}(id=${loan.id})}" data-delete-trigger data-delete-entity="loan">Delete Loan</a>
+        </div>
+    </section>
+</main>
+<div th:replace="~{fragments/layout :: confirmModal}"></div>
+</body>
+</html>
