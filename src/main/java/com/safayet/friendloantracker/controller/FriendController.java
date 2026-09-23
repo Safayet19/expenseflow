@@ -1,6 +1,7 @@
 package com.safayet.friendloantracker.controller;
 
 import com.safayet.friendloantracker.dto.FriendDTO;
+import com.safayet.friendloantracker.exception.InvalidOperationException;
 import com.safayet.friendloantracker.model.Friend;
 import com.safayet.friendloantracker.services.FriendService;
 import jakarta.validation.Valid;
@@ -43,7 +44,12 @@ public class FriendController {
             return "friend-form";
         }
 
-        friendService.saveFriend(friendDTO);
+        try {
+            friendService.saveFriend(friendDTO);
+        } catch (InvalidOperationException exception) {
+            bindingResult.reject("form.error", exception.getMessage());
+            return "friend-form";
+        }
         return "redirect:/friends";
     }
 
@@ -61,7 +67,7 @@ public class FriendController {
         return "friend-form";
     }
 
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deleteFriend(@PathVariable String id) {
         friendService.deleteFriend(id);
         return "redirect:/friends";

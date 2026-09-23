@@ -2,7 +2,6 @@ package com.safayet.friendloantracker.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,7 +22,6 @@ public class ContactLogDTO {
     private String loanId;
 
     @NotNull(message = "Contact date is required")
-    @PastOrPresent(message = "Contact date cannot be in the future")
     private LocalDate contactDate;
 
     @NotBlank(message = "Contact method is required")

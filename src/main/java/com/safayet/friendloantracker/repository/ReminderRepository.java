@@ -11,5 +11,7 @@ public interface ReminderRepository extends MongoRepository<Reminder, String> {
 
     boolean existsByFriendId(String friendId);
 
+    boolean existsByLoanId(String loanId);
+
     void deleteAllByLoanId(String loanId);
 }

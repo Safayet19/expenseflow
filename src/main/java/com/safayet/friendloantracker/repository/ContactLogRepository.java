@@ -11,5 +11,7 @@ public interface ContactLogRepository extends MongoRepository<ContactLog, String
 
     boolean existsByFriendId(String friendId);
 
+    boolean existsByLoanId(String loanId);
+
     void deleteAllByLoanId(String loanId);
 }

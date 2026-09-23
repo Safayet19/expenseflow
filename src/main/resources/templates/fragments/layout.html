@@ -3,7 +3,9 @@
 <head th:fragment="head(pageTitle)">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#111827">
     <title th:text="${pageTitle + ' | Friend Loan Tracker'}">Friend Loan Tracker</title>
+    <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
     <link rel="stylesheet" th:href="@{/style.css}">
     <script th:src="@{/js/app.js}" defer></script>
 </head>
@@ -11,7 +13,7 @@
 <nav class="navbar" th:fragment="navbar(activePage)">
     <div class="nav-inner">
         <a class="brand" th:href="@{/}" aria-label="Friend Loan Tracker home">
-            <span class="brand-mark">FL</span>
+            <img class="brand-logo" th:src="@{/images/friend-loan-logo.svg}" alt="" width="46" height="46">
             <span class="brand-copy">
                 <strong>Friend Loan</strong>
                 <small>Tracker</small>
@@ -41,10 +43,10 @@
             <h2 id="confirmTitle">Delete this record?</h2>
             <p id="confirmMessage">This action cannot be undone.</p>
         </div>
-        <div class="confirm-actions">
+        <form method="post" class="confirm-actions" data-confirm-form>
             <button class="button secondary" type="button" data-confirm-cancel>Cancel</button>
-            <a class="button danger solid" href="#" data-confirm-action>Delete</a>
-        </div>
+            <button class="button danger solid" type="submit">Delete</button>
+        </form>
     </div>
 </div>
 </body>

@@ -18,7 +18,7 @@
                 <thead>
                 <tr>
                     <th>No.</th>
-                    <th>Loan ID</th>
+                    <th>Loan</th>
                     <th>Friend</th>
                     <th>Activity</th>
                     <th>Date and Time</th>
@@ -27,10 +27,10 @@
                 <tbody>
                 <tr th:each="activity, stat : ${activities}">
                     <td class="row-number" th:text="${stat.count}"></td>
-                    <td th:text="${activity.loan != null ? 'Loan #' + activity.loan.id : '-'}"></td>
+                    <td th:text="${activity.loan != null ? (activity.loan.itemName != null && !activity.loan.itemName.isEmpty() ? activity.loan.itemName : activity.loan.loanType) : '-'}"></td>
                     <td class="strong-cell"
                         th:text="${activity.loan != null && activity.loan.friend != null ? activity.loan.friend.name : '-'}"></td>
-                    <td th:text="${activity.activityMessage}"></td>
+                    <td class="table-note" th:text="${activity.activityMessage}"></td>
                     <td th:text="${activity.activityDateTime}"></td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(activities)}">

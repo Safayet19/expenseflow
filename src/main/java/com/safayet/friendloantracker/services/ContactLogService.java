@@ -12,6 +12,8 @@ import com.safayet.friendloantracker.repository.LoanRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ContactLogService {
 
+    private static final ZoneId APP_ZONE = ZoneId.of("Asia/Dhaka");
     private static final Set<String> ALLOWED_METHODS = Set.of(
             "Phone Call", "WhatsApp", "Messenger", "SMS", "In Person", "Other"
     );
@@ -36,10 +39,21 @@ public class ContactLogService {
             throw new InvalidOperationException("Invalid contact method selected.");
         }
 
+        LocalDate today = LocalDate.now(APP_ZONE);
+        if (contactLogDTO.getContactDate() != null && contactLogDTO.getContactDate().isAfter(today)) {
+            throw new InvalidOperationException("Contact date cannot be in the future.");
+        }
+
         if (contactLogDTO.getNextContactDate() != null
                 && contactLogDTO.getContactDate() != null
                 && contactLogDTO.getNextContactDate().isBefore(contactLogDTO.getContactDate())) {
             throw new InvalidOperationException("Next contact date cannot be before the contact date.");
+        }
+
+        if (isBlank(contactLogDTO.getId())
+                && contactLogDTO.getNextContactDate() != null
+                && contactLogDTO.getNextContactDate().isBefore(today)) {
+            throw new InvalidOperationException("Next contact date cannot already be in the past.");
         }
 
         Friend friend = friendRepository.findById(contactLogDTO.getFriendId())

@@ -1,6 +1,7 @@
 package com.safayet.friendloantracker.controller;
 
 import com.safayet.friendloantracker.dto.LoanDTO;
+import com.safayet.friendloantracker.exception.InvalidOperationException;
 import com.safayet.friendloantracker.model.Loan;
 import com.safayet.friendloantracker.model.Tag;
 import com.safayet.friendloantracker.services.FriendService;
@@ -54,7 +55,13 @@ public class LoanController {
             return "loan-form";
         }
 
-        loanService.saveLoan(loanDTO);
+        try {
+            loanService.saveLoan(loanDTO);
+        } catch (InvalidOperationException exception) {
+            bindingResult.reject("form.error", exception.getMessage());
+            addFormData(model);
+            return "loan-form";
+        }
         return "redirect:/loans";
     }
 
@@ -105,7 +112,7 @@ public class LoanController {
         return "loan-details";
     }
 
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deleteLoan(@PathVariable String id) {
         loanService.deleteLoan(id);
         return "redirect:/loans";

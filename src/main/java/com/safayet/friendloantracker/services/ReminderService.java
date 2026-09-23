@@ -12,6 +12,9 @@ import com.safayet.friendloantracker.repository.ReminderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,11 +26,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ReminderService {
 
+    private static final ZoneId APP_ZONE = ZoneId.of("Asia/Dhaka");
+
     private final ReminderRepository reminderRepository;
     private final FriendRepository friendRepository;
     private final LoanRepository loanRepository;
 
     public void saveReminder(ReminderDTO reminderDTO) {
+        validateReminderDateTime(reminderDTO);
+
         Friend friend = friendRepository.findById(reminderDTO.getFriendId())
                 .orElseThrow(() -> new InvalidOperationException("Selected friend does not exist."));
 
@@ -85,6 +92,26 @@ public class ReminderService {
         Reminder reminder = reminderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Reminder not found."));
         reminderRepository.delete(reminder);
+    }
+
+    private void validateReminderDateTime(ReminderDTO reminderDTO) {
+        if (reminderDTO.isCompleted()
+                || reminderDTO.getReminderDate() == null
+                || reminderDTO.getReminderTime() == null) {
+            return;
+        }
+
+        LocalDate today = LocalDate.now(APP_ZONE);
+        if (reminderDTO.getReminderDate().isBefore(today)) {
+            throw new InvalidOperationException("Pending reminder date cannot be in the past.");
+        }
+
+        if (reminderDTO.getReminderDate().isEqual(today)) {
+            LocalTime now = LocalTime.now(APP_ZONE).withSecond(0).withNano(0);
+            if (reminderDTO.getReminderTime().isBefore(now)) {
+                throw new InvalidOperationException("Pending reminder time cannot already be in the past.");
+            }
+        }
     }
 
     private void hydrateRelations(List<Reminder> reminders) {

@@ -34,16 +34,18 @@
                     <td class="row-number" th:text="${stat.count}"></td>
                     <td class="strong-cell"
                         th:text="${contact.friend != null ? contact.friend.name : (contact.loan != null && contact.loan.friend != null ? contact.loan.friend.name : '-')}"></td>
-                    <td th:text="${contact.loan != null ? 'Loan #' + contact.loan.id : '-'}"></td>
+                    <td th:text="${contact.loan != null ? (contact.loan.itemName != null && !contact.loan.itemName.isEmpty() ? contact.loan.itemName : contact.loan.loanType) : '-'}"></td>
                     <td th:text="${contact.contactDate}"></td>
                     <td th:text="${contact.contactMethod}"></td>
-                    <td th:text="${contact.discussion}"></td>
-                    <td th:text="${contact.friendResponse != null && !contact.friendResponse.isEmpty() ? contact.friendResponse : '-'}"></td>
+                    <td class="table-note" th:text="${contact.discussion}"></td>
+                    <td class="table-note" th:text="${contact.friendResponse != null && !contact.friendResponse.isEmpty() ? contact.friendResponse : '-'}"></td>
                     <td th:text="${contact.nextContactDate != null ? contact.nextContactDate : '-'}"></td>
                     <td>
                         <div class="action-links">
                             <a class="action-link edit" th:href="@{/contacts/edit/{id}(id=${contact.id})}">Edit</a>
-                            <a class="action-link delete" th:href="@{/contacts/delete/{id}(id=${contact.id})}" data-delete-trigger data-delete-entity="contact log">Delete</a>
+                            <form class="inline-action-form" method="post" th:action="@{/contacts/delete/{id}(id=${contact.id})}">
+                                <button class="action-link delete" type="button" data-delete-trigger data-delete-entity="contact log">Delete</button>
+                            </form>
                         </div>
                     </td>
                 </tr>

@@ -31,16 +31,23 @@
                 <tbody>
                 <tr th:each="friend, stat : ${friends}">
                     <td class="row-number" th:text="${stat.count}"></td>
-                    <td class="strong-cell" th:text="${friend.name}"></td>
+                    <td>
+                        <div class="person-cell">
+                            <span class="person-avatar" th:text="${#strings.substring(friend.name, 0, 1)}">F</span>
+                            <span class="person-name" th:text="${friend.name}"></span>
+                        </div>
+                    </td>
                     <td th:text="${friend.phone}"></td>
-                    <td th:text="${friend.email}"></td>
-                    <td th:text="${friend.address != null ? friend.address.fullAddress : '-'}"></td>
-                    <td th:text="${#lists.size(friend.loans)}"></td>
-                    <td th:text="${friend.notes}"></td>
+                    <td th:text="${friend.email != null && !friend.email.isEmpty() ? friend.email : '-'}"></td>
+                    <td th:text="${friend.address != null && friend.address.fullAddress != null && !friend.address.fullAddress.isEmpty() ? friend.address.fullAddress : '-'}"></td>
+                    <td><span class="loan-count" th:text="${#lists.size(friend.loans)}"></span></td>
+                    <td class="table-note" th:text="${friend.notes != null && !friend.notes.isEmpty() ? friend.notes : '-'}"></td>
                     <td>
                         <div class="action-links">
                             <a class="action-link edit" th:href="@{/friends/edit/{id}(id=${friend.id})}">Edit</a>
-                            <a class="action-link delete" th:href="@{/friends/delete/{id}(id=${friend.id})}" data-delete-trigger data-delete-entity="friend" th:attr="data-delete-name=${friend.name}">Delete</a>
+                            <form class="inline-action-form" method="post" th:action="@{/friends/delete/{id}(id=${friend.id})}">
+                                <button class="action-link delete" type="button" data-delete-trigger data-delete-entity="friend" th:attr="data-delete-name=${friend.name}">Delete</button>
+                            </form>
                         </div>
                     </td>
                 </tr>

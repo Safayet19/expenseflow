@@ -22,11 +22,18 @@ public class TagService {
     private final LoanRepository loanRepository;
 
     public void saveTag(TagDTO tagDTO) {
-        Tag tag = isBlank(tagDTO.getId())
-                ? new Tag()
-                : getRequiredTag(tagDTO.getId());
+        String id = tagDTO.getId();
+        String name = tagDTO.getName().trim();
 
-        tag.setName(tagDTO.getName().trim());
+        boolean duplicate = isBlank(id)
+                ? tagRepository.existsByNameIgnoreCase(name)
+                : tagRepository.existsByNameIgnoreCaseAndIdNot(name, id);
+        if (duplicate) {
+            throw new InvalidOperationException("A tag with this name already exists.");
+        }
+
+        Tag tag = isBlank(id) ? new Tag() : getRequiredTag(id);
+        tag.setName(name);
         tag.setDescription(cleanNullable(tagDTO.getDescription()));
         tagRepository.save(tag);
     }
@@ -67,7 +74,9 @@ public class TagService {
         List<Loan> loans = loanRepository.findAllByTagIdsContaining(id);
 
         for (Loan loan : loans) {
-            loan.getTagIds().remove(id);
+            if (loan.getTagIds() != null) {
+                loan.getTagIds().remove(id);
+            }
         }
         if (!loans.isEmpty()) {
             loanRepository.saveAll(loans);

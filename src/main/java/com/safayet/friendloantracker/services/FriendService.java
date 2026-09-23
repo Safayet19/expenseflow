@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -28,13 +29,33 @@ public class FriendService {
     private final ContactLogRepository contactLogRepository;
 
     public void saveFriend(FriendDTO friendDTO) {
-        Friend friend = isBlank(friendDTO.getId())
-                ? new Friend()
-                : getRequiredFriend(friendDTO.getId());
+        String id = friendDTO.getId();
+        String phone = friendDTO.getPhone().trim();
+        String email = cleanNullable(friendDTO.getEmail());
+        if (email != null) {
+            email = email.toLowerCase(Locale.ROOT);
+        }
 
+        boolean duplicatePhone = isBlank(id)
+                ? friendRepository.existsByPhone(phone)
+                : friendRepository.existsByPhoneAndIdNot(phone, id);
+        if (duplicatePhone) {
+            throw new InvalidOperationException("Another friend already uses this phone number.");
+        }
+
+        if (email != null) {
+            boolean duplicateEmail = isBlank(id)
+                    ? friendRepository.existsByEmailIgnoreCase(email)
+                    : friendRepository.existsByEmailIgnoreCaseAndIdNot(email, id);
+            if (duplicateEmail) {
+                throw new InvalidOperationException("Another friend already uses this email address.");
+            }
+        }
+
+        Friend friend = isBlank(id) ? new Friend() : getRequiredFriend(id);
         friend.setName(friendDTO.getName().trim());
-        friend.setPhone(friendDTO.getPhone().trim());
-        friend.setEmail(cleanNullable(friendDTO.getEmail()));
+        friend.setPhone(phone);
+        friend.setEmail(email);
 
         Address address = friendDTO.getAddress() == null ? new Address() : friendDTO.getAddress();
         address.setFullAddress(cleanNullable(address.getFullAddress()));

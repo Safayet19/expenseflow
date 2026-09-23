@@ -28,11 +28,13 @@
                 <tr th:each="tag, stat : ${tags}">
                     <td class="row-number" th:text="${stat.count}"></td>
                     <td><span class="tag-badge" th:text="${tag.name}"></span></td>
-                    <td th:text="${tag.description != null && !tag.description.isEmpty() ? tag.description : '-'}"></td>
+                    <td class="table-note" th:text="${tag.description != null && !tag.description.isEmpty() ? tag.description : '-'}"></td>
                     <td>
                         <div class="action-links">
                             <a class="action-link edit" th:href="@{/tags/edit/{id}(id=${tag.id})}">Edit</a>
-                            <a class="action-link delete" th:href="@{/tags/delete/{id}(id=${tag.id})}" data-delete-trigger data-delete-entity="tag" th:attr="data-delete-name=${tag.name}">Delete</a>
+                            <form class="inline-action-form" method="post" th:action="@{/tags/delete/{id}(id=${tag.id})}">
+                                <button class="action-link delete" type="button" data-delete-trigger data-delete-entity="tag" th:attr="data-delete-name=${tag.name}">Delete</button>
+                            </form>
                         </div>
                     </td>
                 </tr>

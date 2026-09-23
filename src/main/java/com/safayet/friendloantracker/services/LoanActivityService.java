@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ public class LoanActivityService {
         activity.setLoanId(loan.getId());
         activity.setLoan(loan);
         activity.setActivityMessage(message);
-        activity.setActivityDateTime(LocalDateTime.now());
+        activity.setActivityDateTime(LocalDateTime.now(ZoneId.of("Asia/Dhaka")));
         loanActivityRepository.save(activity);
     }
 

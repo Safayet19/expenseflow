@@ -4,4 +4,8 @@ import com.safayet.friendloantracker.model.Tag;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface TagRepository extends MongoRepository<Tag, String> {
+
+    boolean existsByNameIgnoreCase(String name);
+
+    boolean existsByNameIgnoreCaseAndIdNot(String name, String id);
 }

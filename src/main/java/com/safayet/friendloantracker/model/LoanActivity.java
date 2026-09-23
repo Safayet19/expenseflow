@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Data
 @Document(collection = "loan_activities")
@@ -34,6 +35,6 @@ public class LoanActivity {
         this.loan = loan;
         this.loanId = loan == null ? null : loan.getId();
         this.activityMessage = activityMessage;
-        this.activityDateTime = LocalDateTime.now();
+        this.activityDateTime = LocalDateTime.now(ZoneId.of("Asia/Dhaka"));
     }
 }

@@ -16,6 +16,8 @@
     <form class="form-card" method="post" th:action="@{/contacts/save}" th:object="${contactLogDTO}" data-date-range data-date-message="Next contact date cannot be before the contact date.">
         <input type="hidden" th:field="*{id}">
 
+        <div class="form-alert" th:if="${#fields.hasGlobalErrors()}" th:each="err : ${#fields.globalErrors()}" th:text="${err}"></div>
+
         <div class="form-grid">
             <div class="form-group">
                 <label>Friend</label>
@@ -34,7 +36,7 @@
                     <option value="">No related loan</option>
                     <option th:each="loan : ${loans}"
                             th:value="${loan.id}"
-                            th:text="${'Loan #' + loan.id + ' - ' + loan.friend.name + ' - ' + (loan.itemName != null && !loan.itemName.isEmpty() ? loan.itemName : loan.loanType)}"></option>
+                            th:text="${(loan.friend != null ? loan.friend.name : 'Unknown friend') + ' - ' + (loan.itemName != null && !loan.itemName.isEmpty() ? loan.itemName : loan.loanType) + ' - due ' + loan.expectedReturnDate}"></option>
                 </select>
             </div>
         </div>
@@ -74,7 +76,7 @@
 
         <div class="form-group">
             <label>Next Contact Date</label>
-            <input type="date" th:field="*{nextContactDate}" data-date-end>
+            <input type="date" th:field="*{nextContactDate}" data-date-end th:attr="data-no-past=${contactLogDTO.id == null ? '' : null}">
             <span class="error-message client-error" data-date-error aria-live="polite"></span>
         </div>
 

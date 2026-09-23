@@ -4,7 +4,6 @@ import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -41,7 +40,6 @@ public class LoanDTO {
     private Integer quantity;
 
     @NotNull(message = "Borrow date is required")
-    @PastOrPresent(message = "Borrow date cannot be in the future")
     private LocalDate borrowDate;
 
     @NotNull(message = "Expected return date is required")

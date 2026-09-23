@@ -23,7 +23,10 @@ public class FriendDTO {
 
     @NotBlank(message = "Phone number cannot be empty")
     @Size(min = 7, max = 20, message = "Phone number must be between 7 and 20 characters")
-    @Pattern(regexp = "^[+0-9()\\- ]+$", message = "Enter a valid phone number")
+    @Pattern(
+            regexp = "^(?=(?:.*\\d){7,})[+0-9()\\- ]+$",
+            message = "Enter a valid phone number with at least 7 digits"
+    )
     private String phone;
 
     @Email(message = "Enter a valid email address")

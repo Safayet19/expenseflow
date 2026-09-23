@@ -1,0 +1,11 @@
+Friend Loan Tracker - UptimeRobot setup
+
+1. Deploy this project on Render normally.
+2. Open your UptimeRobot dashboard and create ONE HTTP(s) monitor for this project.
+3. Monitor URL:
+   https://YOUR-RENDER-SERVICE.onrender.com/health
+4. Monitoring interval: 5 minutes.
+5. Expected response from /health: OK
+
+The /health endpoint is intentionally lightweight and does not query MongoDB.
+No Render, MongoDB, Docker, Gradle, or application.properties settings need to be changed for this monitor.

@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -61,7 +62,7 @@ public class Loan {
     @Transient
     public boolean isOverdue() {
         return expectedReturnDate != null
-                && expectedReturnDate.isBefore(LocalDate.now())
+                && expectedReturnDate.isBefore(LocalDate.now(ZoneId.of("Asia/Dhaka")))
                 && !"RETURNED".equalsIgnoreCase(status);
     }
 }

@@ -21,7 +21,7 @@
                 <p class="muted-text" th:if="${loan.friend != null}" th:text="${loan.friend.phone}"></p>
             </div>
             <span class="status-badge"
-                  th:classappend="${loan.overdue ? 'missed-badge' : ''}"
+                  th:classappend="${loan.overdue ? ' overdue-badge' : (#strings.equalsIgnoreCase(loan.status, 'RETURNED') ? ' returned-badge' : ' borrowed-badge')}"
                   th:text="${loan.overdue ? 'OVERDUE' : loan.status}">BORROWED</span>
         </div>
 
@@ -75,7 +75,9 @@
 
         <div class="form-actions">
             <a class="button primary" th:href="@{/loans/edit/{id}(id=${loan.id})}">Edit Loan</a>
-            <a class="button danger" th:href="@{/loans/delete/{id}(id=${loan.id})}" data-delete-trigger data-delete-entity="loan">Delete Loan</a>
+            <form class="inline-action-form" method="post" th:action="@{/loans/delete/{id}(id=${loan.id})}">
+                <button class="button danger" type="button" data-delete-trigger data-delete-entity="loan">Delete Loan</button>
+            </form>
         </div>
     </section>
 </main>

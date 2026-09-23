@@ -15,6 +15,8 @@ import com.safayet.friendloantracker.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -27,10 +29,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LoanService {
 
+    private static final ZoneId APP_ZONE = ZoneId.of("Asia/Dhaka");
     private static final Set<String> ALLOWED_LOAN_TYPES = Set.of(
             "Money", "Book", "Charger", "Laptop", "Umbrella", "Clothes", "Other"
     );
-    private static final Set<String> ALLOWED_STATUSES = Set.of("BORROWED", "RETURNED", "OVERDUE");
+    private static final Set<String> ALLOWED_STATUSES = Set.of("BORROWED", "RETURNED");
 
     private final LoanRepository loanRepository;
     private final FriendRepository friendRepository;
@@ -43,23 +46,34 @@ public class LoanService {
     public void saveLoan(LoanDTO loanDTO) {
         validateLoanRequest(loanDTO);
 
-        Friend friend = friendRepository.findById(loanDTO.getFriendId())
-                .orElseThrow(() -> new InvalidOperationException("Selected friend does not exist."));
-
-        Set<String> tagIds = loanDTO.getTagIds() == null
-                ? new LinkedHashSet<>()
-                : new LinkedHashSet<>(loanDTO.getTagIds());
-
-        List<Tag> tags = tagRepository.findAllById(tagIds);
-        if (tags.size() != tagIds.size()) {
-            throw new InvalidOperationException("One or more selected tags are invalid.");
-        }
-
         boolean newLoan = isBlank(loanDTO.getId());
         Loan loan = newLoan
                 ? new Loan()
                 : loanRepository.findById(loanDTO.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Loan not found."));
+
+        Friend friend = friendRepository.findById(loanDTO.getFriendId())
+                .orElseThrow(() -> new InvalidOperationException("Selected friend does not exist."));
+
+        if (!newLoan
+                && !Objects.equals(loan.getFriendId(), friend.getId())
+                && (reminderRepository.existsByLoanId(loan.getId())
+                || contactLogRepository.existsByLoanId(loan.getId()))) {
+            throw new InvalidOperationException(
+                    "The friend cannot be changed because this loan already has reminders or contact logs."
+            );
+        }
+
+        Set<String> tagIds = loanDTO.getTagIds() == null
+                ? new LinkedHashSet<>()
+                : loanDTO.getTagIds().stream()
+                .filter(id -> id != null && !id.isBlank())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        List<Tag> tags = tagRepository.findAllById(tagIds);
+        if (tags.size() != tagIds.size()) {
+            throw new InvalidOperationException("One or more selected tags are invalid.");
+        }
 
         loan.setFriendId(friend.getId());
         loan.setFriend(friend);
@@ -123,19 +137,37 @@ public class LoanService {
     }
 
     private void validateLoanRequest(LoanDTO loanDTO) {
-        if (!ALLOWED_LOAN_TYPES.contains(loanDTO.getLoanType())) {
+        String type = loanDTO.getLoanType() == null ? "" : loanDTO.getLoanType().trim();
+        if (!ALLOWED_LOAN_TYPES.contains(type)) {
             throw new InvalidOperationException("Invalid loan type selected.");
         }
 
         String status = loanDTO.getStatus() == null ? "" : loanDTO.getStatus().trim().toUpperCase();
         if (!ALLOWED_STATUSES.contains(status)) {
-            throw new InvalidOperationException("Invalid loan status selected.");
+            throw new InvalidOperationException("Status must be BORROWED or RETURNED. Overdue is calculated automatically.");
+        }
+
+        if (loanDTO.getBorrowDate() != null && loanDTO.getBorrowDate().isAfter(LocalDate.now(APP_ZONE))) {
+            throw new InvalidOperationException("Borrow date cannot be in the future.");
         }
 
         if (loanDTO.getBorrowDate() != null
                 && loanDTO.getExpectedReturnDate() != null
                 && loanDTO.getExpectedReturnDate().isBefore(loanDTO.getBorrowDate())) {
             throw new InvalidOperationException("Expected return date cannot be before the borrow date.");
+        }
+
+        if ("Money".equals(type)) {
+            if (loanDTO.getAmount() == null || loanDTO.getAmount() <= 0) {
+                throw new InvalidOperationException("Money loans require an amount greater than 0.");
+            }
+        } else {
+            if (isBlank(loanDTO.getItemName())) {
+                throw new InvalidOperationException("Item name is required for item loans.");
+            }
+            if (loanDTO.getQuantity() == null || loanDTO.getQuantity() <= 0) {
+                throw new InvalidOperationException("Item loans require a quantity of at least 1.");
+            }
         }
     }
 

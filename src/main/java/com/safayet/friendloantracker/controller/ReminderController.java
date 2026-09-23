@@ -1,6 +1,7 @@
 package com.safayet.friendloantracker.controller;
 
 import com.safayet.friendloantracker.dto.ReminderDTO;
+import com.safayet.friendloantracker.exception.InvalidOperationException;
 import com.safayet.friendloantracker.model.Reminder;
 import com.safayet.friendloantracker.services.FriendService;
 import com.safayet.friendloantracker.services.LoanService;
@@ -18,11 +19,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/reminders")
 public class ReminderController {
+
+    private static final ZoneId APP_ZONE = ZoneId.of("Asia/Dhaka");
 
     private final ReminderService reminderService;
     private final FriendService friendService;
@@ -31,7 +35,7 @@ public class ReminderController {
     @GetMapping
     public String showReminders(Model model) {
         model.addAttribute("reminders", reminderService.getAllReminders());
-        model.addAttribute("today", LocalDate.now());
+        model.addAttribute("today", LocalDate.now(APP_ZONE));
         return "reminder-list";
     }
 
@@ -53,7 +57,13 @@ public class ReminderController {
             return "reminder-form";
         }
 
-        reminderService.saveReminder(reminderDTO);
+        try {
+            reminderService.saveReminder(reminderDTO);
+        } catch (InvalidOperationException exception) {
+            bindingResult.reject("form.error", exception.getMessage());
+            addFormData(model);
+            return "reminder-form";
+        }
         return "redirect:/reminders";
     }
 
@@ -72,13 +82,13 @@ public class ReminderController {
         return "reminder-form";
     }
 
-    @GetMapping("/complete/{id}")
+    @PostMapping("/complete/{id}")
     public String completeReminder(@PathVariable String id) {
         reminderService.markCompleted(id);
         return "redirect:/reminders";
     }
 
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deleteReminder(@PathVariable String id) {
         reminderService.deleteReminder(id);
         return "redirect:/reminders";

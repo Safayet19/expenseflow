@@ -1,6 +1,7 @@
 package com.safayet.friendloantracker.controller;
 
 import com.safayet.friendloantracker.dto.ContactLogDTO;
+import com.safayet.friendloantracker.exception.InvalidOperationException;
 import com.safayet.friendloantracker.model.ContactLog;
 import com.safayet.friendloantracker.services.ContactLogService;
 import com.safayet.friendloantracker.services.FriendService;
@@ -50,7 +51,13 @@ public class ContactLogController {
             return "contact-log-form";
         }
 
-        contactLogService.saveContactLog(contactLogDTO);
+        try {
+            contactLogService.saveContactLog(contactLogDTO);
+        } catch (InvalidOperationException exception) {
+            bindingResult.reject("form.error", exception.getMessage());
+            addFormData(model);
+            return "contact-log-form";
+        }
         return "redirect:/contacts";
     }
 
@@ -69,7 +76,7 @@ public class ContactLogController {
         return "contact-log-form";
     }
 
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deleteContactLog(@PathVariable String id) {
         contactLogService.deleteContactLog(id);
         return "redirect:/contacts";

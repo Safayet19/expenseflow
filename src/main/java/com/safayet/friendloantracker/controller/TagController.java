@@ -1,6 +1,7 @@
 package com.safayet.friendloantracker.controller;
 
 import com.safayet.friendloantracker.dto.TagDTO;
+import com.safayet.friendloantracker.exception.InvalidOperationException;
 import com.safayet.friendloantracker.model.Tag;
 import com.safayet.friendloantracker.services.TagService;
 import jakarta.validation.Valid;
@@ -43,7 +44,12 @@ public class TagController {
             return "tag-form";
         }
 
-        tagService.saveTag(tagDTO);
+        try {
+            tagService.saveTag(tagDTO);
+        } catch (InvalidOperationException exception) {
+            bindingResult.reject("form.error", exception.getMessage());
+            return "tag-form";
+        }
         return "redirect:/tags";
     }
 
@@ -60,7 +66,7 @@ public class TagController {
         return "tag-form";
     }
 
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deleteTag(@PathVariable String id) {
         tagService.deleteTag(id);
         return "redirect:/tags";
